@@ -64,6 +64,7 @@
 <body>
 
 <div class="chat">
+
     <h1>🚀 Lenny Growth Assistant</h1>
 
     <p>
@@ -82,6 +83,7 @@
     <div id="answer"></div>
 
     <div id="sources" class="sources"></div>
+
 </div>
 
 <script>
@@ -104,35 +106,43 @@ async function askQuestion() {
 
     try {
 
-        const response = await fetch("http://127.0.0.1:8000/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                question: question
-            })
-        });
+        const sessionId = "c56ff93e-07fd-413e-b64f-53dea2d6bb19";
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/api/sessions/${sessionId}/messages`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    message: question
+                })
+            }
+        );
 
         if (!response.ok) {
-            throw new Error("API request failed");
+            throw new Error(`API request failed: ${response.status}`);
         }
 
         const data = await response.json();
 
-        answer.textContent = data.answer || data.response || "No answer returned.";
+        answer.textContent =
+            data.answer || "No answer returned.";
 
         if (data.sources && data.sources.length > 0) {
             sources.textContent =
-                "Sources: " + data.sources.join(", ");
+                "Sources: " +
+                data.sources.map(source => source.title).join(", ");
         }
 
     } catch (error) {
 
         answer.textContent =
-            "Error connecting to the backend. Make sure FastAPI is running.";
+            "Error connecting to the backend.";
 
-        console.error(error);
+        console.error("Backend error:", error);
 
     } finally {
 
