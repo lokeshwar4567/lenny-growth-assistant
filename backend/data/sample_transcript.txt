@@ -1,0 +1,19 @@
+Lenny Growth Assistant Sample Transcript
+
+Topic: Product Growth
+
+A strong growth process starts with understanding the customer problem.
+Teams should talk to customers regularly, identify repeated pain points,
+and prioritize problems that create meaningful value.
+
+Topic: Product Strategy
+
+A product strategy should clearly explain who the product serves,
+what problem it solves, and why the proposed solution is valuable.
+Good teams use evidence rather than assumptions when making decisions.
+
+Topic: Experimentation
+
+Growth experiments should have a clear hypothesis, measurable outcome,
+and defined success criteria. Teams should learn from unsuccessful
+experiments instead of treating them only as failures.

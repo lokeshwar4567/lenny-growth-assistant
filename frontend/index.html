@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lenny Growth Assistant</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5}
+header{padding:20px;background:#222;color:white}
+main{max-width:900px;margin:30px auto;background:white;padding:25px;border-radius:12px}
+#chat{height:450px;overflow:auto;border:1px solid #ddd;padding:15px}
+.user{margin:12px 0;text-align:right}
+.assistant{margin:12px 0}
+input{width:75%;padding:12px}
+button{padding:12px 20px}
+.source{font-size:12px;color:#666;margin-top:5px}
+</style>
+</head>
+<body>
+<header>
+<h1>Lenny Growth Assistant</h1>
+<div>Local Ollama • llama3.2:3b</div>
+</header>
+
+<main>
+<div id="chat"></div>
+<br>
+<input id="message" placeholder="Ask a growth question..." />
+<button onclick="send()">Send</button>
+</main>
+
+<script>
+let sessionId = null;
+
+async function createSession(){
+    const r = await fetch('/api/sessions',{method:'POST'});
+    const data = await r.json();
+    sessionId = data.session_id;
+}
+
+function addMessage(text, cls, sources=[]){
+    const chat=document.getElementById('chat');
+    const div=document.createElement('div');
+    div.className=cls;
+    div.innerHTML='<b>'+ (cls==='user'?'You':'Assistant') +
+        ':</b> '+text.replace(/</g,'&lt;');
+
+    if(sources.length){
+        const s=document.createElement('div');
+        s.className='source';
+        s.textContent='Sources: '+sources.map(x=>x.title).join(', ');
+        div.appendChild(s);
+    }
+
+    chat.appendChild(div);
+    chat.scrollTop=chat.scrollHeight;
+}
+
+async function send(){
+    const input=document.getElementById('message');
+    const message=input.value.trim();
+    if(!message)return;
+
+    input.value='';
+    addMessage(message,'user');
+
+    const r=await fetch('/api/sessions/'+sessionId+'/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({message})
+    });
+
+    const data=await r.json();
+
+    if(!r.ok){
+        addMessage('Error: '+(data.detail||'Request failed'),'assistant');
+        return;
+    }
+
+    addMessage(data.answer,'assistant',data.sources||[]);
+}
+
+createSession();
+</script>
+</body>
+</html>
